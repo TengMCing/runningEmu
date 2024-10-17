@@ -12,6 +12,20 @@ un <- function(m) {
   mean(colMeans(m) + rowMeans(m))
 }
 
+un_2 <- function(m) {
+  dn <- dim(m)
+  n <- prod(dn[id <- seq_len(1L)])
+  dn <- dn[-id]
+  colmeans <- .Internal(colSums(m, n, prod(dn), FALSE))
+  print(colmeans)
+  
+  dn <- dim(m)
+  p <- prod(dn[-(id <- seq_len(1L))])
+  dn <- dn[id]
+  rowmeans <- .Internal(rowMeans(m, prod(dn), p, FALSE))
+  mean(colmeans + rowmeans)
+}
+
 un_origin <- function(m) {
   mean(apply(m,1,mean) + apply(m,2,mean))
 }
@@ -24,6 +38,21 @@ un_origin <- function(m) {
 #' @return A numerical vector containing the longest continuous increasing subset
 #' @export
 deux <- function(vec) {
+  # browser()
+  n <- length(vec)
+  flag <- c(vec[2:n], .Machine$double.xmin) > vec
+  result <- rle(flag)
+  result_lengths <- result$lengths
+  result_values <- result$values
+  max_true_length <- max(result_lengths[result_values == TRUE])
+  idx <- which(result_values == TRUE & result_lengths == max_true_length)[1]
+  if (idx == 0) from_idx <- 1 else from_idx <- sum(result_lengths[1:(idx - 1)]) + 1
+  up_to_idx <- sum(result_lengths[1:idx]) + 1
+  return(vec[from_idx:up_to_idx])
+}
+
+
+deux_origin <- function(vec) {
   longest_seq <- c(vec[1])  # Longest increasing subsequence found
   current_seq <- c(vec[1])  # Current increasing subsequence
 
