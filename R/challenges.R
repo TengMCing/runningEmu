@@ -9,6 +9,10 @@
 #' un(m)
 #' @export
 un <- function(m) {
+  mean(colMeans(m) + rowMeans(m))
+}
+
+un_origin <- function(m) {
   mean(apply(m,1,mean) + apply(m,2,mean))
 }
 
